@@ -21,7 +21,6 @@ if [ $USE_PROXY == "yes"] ; then
 		echo 'use_proxy = on' | sudo tee -a /home/vagrant/.wgetrc
 		echo 'wait = 15' | sudo tee -a /home/vagrant/.wgetrc # might be romoved
 		alias curl='curl -x $MY_PROXY:$MY_PORT'
-		sudo git config --global http.proxy http://$MY_PROXY:$MY_PORT
 fi
 
 echo 'Init - install docker'
@@ -46,6 +45,9 @@ sudo usermod -aG docker vagrant
 if [ $APPS == "yes" ] ; then
 	echo 'Install - nice apps'
 	sudo apt-get install -y ranger zsh git
+	if [ USE_PROXY == "yes" ] ; then
+		sudo git config --global http.proxy http://$MY_PROXY:$MY_PORT
+	fi
 	sudo git clone git://github.com/robbyrussell/oh-my-zsh.git /home/vagrant/.oh-my-zsh
 	echo 'Writing in .zshrc file'
 	echo "export ZSH=/home/vagrant/.oh-my-zsh" | sudo tee  .zshrc
