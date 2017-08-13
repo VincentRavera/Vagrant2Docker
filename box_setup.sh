@@ -14,8 +14,8 @@ APPS="no" # change to yes if you want awsome apps in your virtual machine
 
 echo "BEGIN OF PROVISION SCRIPT"
 
-echo 'Setup - Proxy (if needed)'
 if [ $USE_PROXY == "yes"] ; then
+		echo 'Setup::Proxy'
 		echo 'Acquire::http::proxy "http://$MY_PROXY:$MY_PORT/";' | sudo tee /etc/apt/apt.conf
 		echo 'http_proxy = $MY_PROXY:$MY_PORT' | sudo tee /home/vagrant/.wgetrc
 		echo 'use_proxy = on' | sudo tee -a /home/vagrant/.wgetrc
@@ -23,7 +23,7 @@ if [ $USE_PROXY == "yes"] ; then
 		alias curl='curl -x $MY_PROXY:$MY_PORT'
 fi
 
-echo 'Init - install docker'
+echo 'Init::InstallDocker'
 # If you are running a xenial(ubuntu 16.04) you may have a nework problem.
 # You should prefer trusty (ubuntu 14.04) instead !
 
@@ -37,15 +37,26 @@ sudo apt-get update
 sudo apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual libsystemd-journal0
 wget https://download.docker.com/linux/ubuntu/dists/trusty/pool/stable/amd64/docker-ce_17.06.0~ce-0~ubuntu_amd64.deb -P /tmp/
 sudo dpkg -i /tmp/docker-ce_17.06.0~ce-0~ubuntu_amd64.deb
+if [ $USE_PROXY == "yes" ] ; then 
+	echo "Docker::Proxy"
+	sudo mkdir -p /etc/systemd/system/docker.service.d
+	DOCKER_PROXY_PATH=/etc/systemd/system/docker.service.d/http-proxy.conf
+	sudo touch $DOCKER_PROXY_PATH
+	echo "[Service]" | sudo tee -a $DOCKER_PROXY_PATH
+	echo "Environment='HTTP_PROXY=http://$MY_PROXY:$MY_PROXY'" | sudo tee -a $DOCKER_PROXY_PATH
+	# change to HTTPS if needed
+	# echo "Environment='HTTPS_PROXY=https://$MY_PROXY:$MY_PROXY'" | sudo tee -a $DOCKER_PROXY_PATH
+	sudo service docker restart
+fi
 
-echo 'Init - User Config'
+echo 'Init::UserConfig'
 sudo groupadd docker
 sudo usermod -aG docker vagrant
 
 if [ $APPS == "yes" ] ; then
-	echo 'Install - nice apps'
+	echo 'Install::NiceApps'
 	sudo apt-get install -y ranger zsh git
-	if [ USE_PROXY == "yes" ] ; then
+	if [ $USE_PROXY == "yes" ] ; then
 		sudo git config --global http.proxy http://$MY_PROXY:$MY_PORT
 	fi
 	sudo git clone git://github.com/robbyrussell/oh-my-zsh.git /home/vagrant/.oh-my-zsh

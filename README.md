@@ -21,7 +21,7 @@ What we need :
 You better install it manually by downloading from the official website.
 Why ? If you happen to update it Vagrant might cry later on.
 
-This is how you do it assuming you are using Linux):
+This is how you do it (assuming you are using Linux):
 1. Check your distro, look if you are in 64b or 32b too.
 ```sehll
 uname -a
