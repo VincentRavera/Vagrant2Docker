@@ -34,6 +34,7 @@ Vagrant.configure(2) do |config|
   config.vm.network "private_network", ip: "192.168.50.4"
   config.vm.hostname = "vbuntu"
   config.vm.provision "shell", path: "box_setup.sh"
+  config.ssh.forward_x11 = true
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
