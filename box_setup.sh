@@ -9,6 +9,9 @@ APPS="no" 	# change to yes if you want awsome apps in your virtual machine
 if [ $USE_PROXY == "yes" ] ; then 
 	MY_PROXY=""
 	MY_PORT=""
+	export HTTP_PROXY=""
+	export HTTPS_PROXY=""
+	export NO_PROXY=""
 fi
 APPS="no" # change to yes if you want awsome apps in your virtual machine
 
